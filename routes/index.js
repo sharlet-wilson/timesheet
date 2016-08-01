@@ -1,4 +1,5 @@
 import keystone from 'keystone';
+import passport from 'passport';
 let middleware = require('./middleware');
 let importRoutes = keystone.importer(__dirname);
  
@@ -18,7 +19,7 @@ keystone.set('500', (err, req, res, next) => {
     if (err instanceof Error) {
         message = err.message;
         err = err.stack;
-    }
+    }   
     res.err(err, title, message);
 });
  
@@ -29,7 +30,10 @@ var routes = {
  
 // Bind Routes
 exports = module.exports = (app) => {
-    
-    app.get('/', routes.views.index);
+    require('../routes/config/passport')(passport);
+    app.use(passport.initialize());
+    app.use(passport.session());
+    require('../routes/views/session')(app, passport);
+    //app.get('/', routes.views.index);
     
 }
